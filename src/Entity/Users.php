@@ -14,7 +14,11 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column(name: "id_user", type: "integer")]
     private ?int $id_user = null;
-
+// Dans src/Entity/Users.php, ajoutez cette méthode
+public function getIdUser(): ?int
+{
+    return $this->id_user;
+}
     #[ORM\Column(name: "nom", type: "string", length: 100)]
     private ?string $nom = null;
 
@@ -47,7 +51,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         $this->date_creation = new \DateTime();
     }
 
-    public function getIdUser(): ?int { return $this->id_user; }
     public function getId(): ?int { return $this->id_user; }
     public function getNom(): ?string { return $this->nom; }
     public function setNom(string $nom): self { $this->nom = $nom; return $this; }

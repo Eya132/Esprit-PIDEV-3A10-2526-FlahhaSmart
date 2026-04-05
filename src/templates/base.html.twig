@@ -57,9 +57,10 @@
                href="{{ path('dashboard_admin') }}">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
-            <a class="nav-link" href="#">
-                <i class="bi bi-people"></i> Utilisateurs
-            </a>
+          {# Dans base.html.twig, mettez à jour le lien Utilisateurs #}
+<a class="nav-link" href="{{ path('admin_users') }}">
+    <i class="bi bi-people"></i> Utilisateurs
+</a>
             <a class="nav-link" href="#">
                 <i class="bi bi-box-seam"></i> Articles
             </a>

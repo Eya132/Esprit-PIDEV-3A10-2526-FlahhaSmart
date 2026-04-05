@@ -15,7 +15,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 #[Route('/dashboard/admin')]
 class AdminController extends AbstractController
 {
-    // ── Liste des utilisateurs ──────────────────────────────────────────────
     #[Route('/users', name: 'admin_users')]
     public function users(Request $request, UserRepository $repo): Response
     {
@@ -23,32 +22,41 @@ class AdminController extends AbstractController
 
         $search = $request->query->get('search', '');
         $role   = $request->query->get('role', '');
+        $status = $request->query->get('status', '');
 
         $qb = $repo->createQueryBuilder('u')->orderBy('u.date_creation', 'DESC');
 
         if ($search) {
-            $qb->andWhere('u.nom LIKE :s OR u.prenom LIKE :s OR u.email LIKE :s')
-               ->setParameter('s', '%' . $search . '%');
+            $qb->andWhere('u.nom LIKE :search OR u.prenom LIKE :search OR u.email LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
         }
         if ($role) {
             $qb->andWhere('u.role = :role')->setParameter('role', $role);
         }
+        if ($status !== '') {
+            $qb->andWhere('u.actif = :status')->setParameter('status', $status === 'actif');
+        }
+
+        $users = $qb->getQuery()->getResult();
+
+        $stats = [
+            'total'        => $repo->count([]),
+            'admins'       => $repo->count(['role' => 'ADMINISTRATEUR']),
+            'agriculteurs' => $repo->count(['role' => 'AGRICULTEUR']),
+            'clients'      => $repo->count(['role' => 'CLIENT']),
+            'actifs'       => $repo->count(['actif' => true]),
+            'inactifs'     => $repo->count(['actif' => false]),
+        ];
 
         return $this->render('admin/users.html.twig', [
-            'users'  => $qb->getQuery()->getResult(),
+            'users'  => $users,
             'search' => $search,
             'role'   => $role,
-            'stats'  => [
-                'total'       => $repo->count([]),
-                'admins'      => $repo->count(['role' => 'ADMINISTRATEUR']),
-                'agriculteurs'=> $repo->count(['role' => 'AGRICULTEUR']),
-                'clients'     => $repo->count(['role' => 'CLIENT']),
-                'actifs'      => $repo->count(['actif' => true]),
-            ],
+            'status' => $status,
+            'stats'  => $stats,
         ]);
     }
 
-    // ── Créer un utilisateur ────────────────────────────────────────────────
     #[Route('/users/new', name: 'admin_user_new')]
     public function newUser(
         Request $request,
@@ -66,7 +74,7 @@ class AdminController extends AbstractController
             $user->setPassword($hasher->hashPassword($user, $plainPassword));
             $em->persist($user);
             $em->flush();
-            $this->addFlash('success', 'Utilisateur cree avec succes !');
+            $this->addFlash('success', 'Utilisateur créé avec succès !');
             return $this->redirectToRoute('admin_users');
         }
 
@@ -77,7 +85,6 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // ── Modifier un utilisateur ─────────────────────────────────────────────
     #[Route('/users/{id}/edit', name: 'admin_user_edit')]
     public function editUser(
         int $id,
@@ -103,7 +110,7 @@ class AdminController extends AbstractController
                 $user->setPassword($hasher->hashPassword($user, $plainPassword));
             }
             $em->flush();
-            $this->addFlash('success', 'Utilisateur modifie avec succes !');
+            $this->addFlash('success', 'Utilisateur modifié avec succès !');
             return $this->redirectToRoute('admin_users');
         }
 
@@ -114,7 +121,6 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // ── Activer / Désactiver ────────────────────────────────────────────────
     #[Route('/users/{id}/toggle', name: 'admin_user_toggle', methods: ['POST'])]
     public function toggleUser(
         int $id,
@@ -125,14 +131,13 @@ class AdminController extends AbstractController
 
         $user = $repo->find($id);
         if ($user) {
-            $user->setActif(!$user->getActif());
+            $user->setActif(!$user->isActif());
             $em->flush();
-            $this->addFlash('success', 'Statut mis a jour.');
+            $this->addFlash('success', 'Statut mis à jour.');
         }
         return $this->redirectToRoute('admin_users');
     }
 
-    // ── Supprimer ───────────────────────────────────────────────────────────
     #[Route('/users/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
     public function deleteUser(
         int $id,
@@ -143,14 +148,13 @@ class AdminController extends AbstractController
 
         $user = $repo->find($id);
         if ($user) {
-            // Empêcher la suppression de son propre compte
             if ($user->getEmail() === $this->getUser()->getUserIdentifier()) {
                 $this->addFlash('error', 'Vous ne pouvez pas supprimer votre propre compte.');
                 return $this->redirectToRoute('admin_users');
             }
             $em->remove($user);
             $em->flush();
-            $this->addFlash('success', 'Utilisateur supprime.');
+            $this->addFlash('success', 'Utilisateur supprimé.');
         }
         return $this->redirectToRoute('admin_users');
     }
