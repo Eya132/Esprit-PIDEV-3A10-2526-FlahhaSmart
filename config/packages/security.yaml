@@ -1,0 +1,35 @@
+security:
+    password_hashers:
+        App\Entity\Users:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Users
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                username_parameter: email
+                password_parameter: password
+                csrf_token_id: authenticate
+                default_target_path: app_dashboard
+                always_use_default_target_path: true
+                enable_csrf: true
+            logout:
+                path: app_logout
+                target: app_login
+
+    access_control:
+        - { path: ^/login,    roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/dashboard, roles: ROLE_USER }

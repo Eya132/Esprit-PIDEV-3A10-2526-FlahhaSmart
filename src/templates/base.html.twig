@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FlahaSmart{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --sidebar-w: 250px; }
+        body { background: #f0f2f5; }
+        .sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh;
+            width: var(--sidebar-w); background: #1a3c34;
+            color: #fff; display: flex; flex-direction: column;
+            z-index: 100; overflow-y: auto;
+        }
+        .sidebar .brand { padding: 1.5rem 1rem; font-size: 1.3rem; font-weight: 700; color: #7fd1ae; }
+        .sidebar .user-info { padding: .75rem 1rem; background: rgba(255,255,255,.07); margin: 0 .75rem .75rem; border-radius: 10px; }
+        .sidebar .user-info small { color: #90b8a8; display: block; font-size: .7rem; }
+        .sidebar .nav-link { color: #c4ddd5; padding: .55rem 1rem; border-radius: 8px; margin: 2px .5rem; display: flex; align-items: center; gap: 10px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(127,209,174,.2); color: #fff; }
+        .sidebar .nav-link i { width: 20px; text-align: center; }
+        .sidebar .nav-section { font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6a9e8e; padding: .6rem 1.5rem .2rem; }
+        .main { margin-left: var(--sidebar-w); padding: 1.5rem 2rem; min-height: 100vh; }
+        .topbar { background: #fff; border-radius: 12px; padding: .75rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+        .card { border: none; border-radius: 14px; box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+        .stat-card { background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff; border-radius: 14px; padding: 1.25rem; }
+        .badge-role { font-size: .7rem; padding: .3em .7em; border-radius: 20px; font-weight: 600; }
+        .badge-ADMINISTRATEUR { background: #fde8d8; color: #c05000; }
+        .badge-AGRICULTEUR    { background: #dff5e3; color: #1a6e35; }
+        .badge-CLIENT         { background: #e0eeff; color: #1a4fa0; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: .3s; }
+            .main { margin-left: 0; padding: 1rem; }
+        }
+    </style>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+{# AFFICHER LA SIDEBAR SEULEMENT SI L'UTILISATEUR EST CONNECTÉ #}
+{% if app.user %}
+<div class="sidebar">
+    <div class="brand">🌱 FlahaSmart</div>
+
+    <div class="user-info">
+        <strong>{{ app.user.fullName }}</strong>
+        <small>{{ app.user.email }}</small>
+        <span class="badge badge-{{ app.user.role }} mt-1">{{ app.user.role }}</span>
+    </div>
+
+    <nav class="mt-2">
+        {% if is_granted('ROLE_ADMIN') %}
+            <span class="nav-section">Administration</span>
+            <a class="nav-link {% if app.request.attributes.get('_route') == 'dashboard_admin' %}active{% endif %}"
+               href="{{ path('dashboard_admin') }}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-people"></i> Utilisateurs
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-box-seam"></i> Articles
+            </a>
+        {% elseif is_granted('ROLE_AGRICULTEUR') %}
+            <span class="nav-section">Agriculteur</span>
+            <a class="nav-link {% if app.request.attributes.get('_route') == 'dashboard_agriculteur' %}active{% endif %}"
+               href="{{ path('dashboard_agriculteur') }}">
+                <i class="bi bi-house"></i> Accueil
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-box"></i> Mes articles
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-chat-dots"></i> Forum
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-droplet"></i> Stock produit
+            </a>
+        {% else %}
+            <span class="nav-section">Client</span>
+            <a class="nav-link {% if app.request.attributes.get('_route') == 'dashboard_client' %}active{% endif %}"
+               href="{{ path('dashboard_client') }}">
+                <i class="bi bi-house"></i> Accueil
+            </a>
+            <a class="nav-link" href="#">
+                <i class="bi bi-bag"></i> Mes commandes
+            </a>
+        {% endif %}
+
+        <span class="nav-section">Compte</span>
+        <a class="nav-link" href="#">
+     <a class="nav-link {% if app.request.attributes.get('_route') == 'app_profile' %}active{% endif %}" 
+   href="{{ path('app_profile') }}">
+    <i class="bi bi-person-gear"></i> Profil
+</a>
+        </a>
+        <a class="nav-link text-danger" href="{{ path('app_logout') }}">
+            <i class="bi bi-box-arrow-right"></i> Déconnexion
+        </a>
+    </nav>
+</div>
+{% endif %}
+
+{# CONTENEUR PRINCIPAL #}
+<div class="{% if app.user %}main{% else %}container py-5{% endif %}">
+    {% if app.user %}
+    <div class="topbar">
+        <div>
+            <strong>{% block page_title %}Tableau de bord{% endblock %}</strong>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted small">{{ "now"|date("d/m/Y H:i") }}</span>
+            <span class="badge bg-secondary">{{ app.user.role }}</span>
+        </div>
+    </div>
+    {% endif %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

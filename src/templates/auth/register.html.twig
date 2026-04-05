@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscription — FlahaSmart{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+
+        <div class="text-center mb-4">
+            <div style="font-size: 2.5rem;">🌱</div>
+            <h2 class="fw-bold mt-2">Créer un compte</h2>
+            <p class="text-muted">Rejoignez la communauté FlahaSmart</p>
+        </div>
+
+        <div class="card p-4">
+            {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ form_label(registrationForm.nom) }}</label>
+                        {{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(registrationForm.nom) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ form_label(registrationForm.prenom) }}</label>
+                        {{ form_widget(registrationForm.prenom, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-3 mt-3">
+                    <label class="form-label fw-semibold">{{ form_label(registrationForm.email) }}</label>
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ form_label(registrationForm.telephone) }}</label>
+                        {{ form_widget(registrationForm.telephone, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ form_label(registrationForm.ville) }}</label>
+                        {{ form_widget(registrationForm.ville, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ form_label(registrationForm.role) }}</label>
+                    {{ form_widget(registrationForm.role, {'attr': {'class': 'form-select'}}) }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mot de passe</label>
+                    {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control mb-2'}}) }}
+                    {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">
+                    Créer mon compte
+                </button>
+
+            {{ form_end(registrationForm) }}
+        </div>
+
+        <p class="text-center mt-3 text-muted">
+            Déjà un compte ?
+            <a href="{{ path('app_login') }}" class="text-decoration-none fw-semibold">Se connecter</a>
+        </p>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+{% block title %}Dashboard Agriculteur — FlahaSmart{% endblock %}
+{% block page_title %}Mon espace agriculteur{% endblock %}
+
+{% block body %}
+
+<div class="mb-4">
+    <h4>Bonjour, {{ user.fullName }} 👋</h4>
+    <p class="text-muted mb-0">{{ user.ville }}</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="--c1:#2e7d52;--c2:#3aad74;">
+            <div class="fs-1 fw-bold">{{ articles|length }}</div>
+            <div class="opacity-75">Mes articles</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="--c1:#1565a8;--c2:#2196f3;">
+            <div class="fs-1 fw-bold">{{ threads|length }}</div>
+            <div class="opacity-75">Mes threads</div>
+        </div>
+    </div>
+</div>
+
+{# Articles #}
+<div class="card mb-4">
+    <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Mes articles</h5>
+        <a href="#" class="btn btn-sm btn-success">+ Ajouter</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Catégorie</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for a in articles %}
+                    <tr>
+                        <td><strong>{{ a.nom }}</strong></td>
+                        <td>{{ a.categorie }}</td>
+                        <td>{{ a.prix }} DT</td>
+                        <td>
+                            <span class="badge {% if a.stock > 10 %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {{ a.stock }}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{ a.date_ajout|date('d/m/Y') }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="text-center text-muted py-3">Aucun article</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# Threads #}
+<div class="card">
+    <div class="card-header bg-white border-0 pt-3 pb-0">
+        <h5 class="mb-0">Mes discussions récentes</h5>
+    </div>
+    <div class="card-body">
+        {% for t in threads %}
+        <div class="d-flex gap-3 py-2 border-bottom">
+            <span class="badge bg-{{ t.sentiment == 'positif' ? 'success' : (t.sentiment == 'negatif' ? 'danger' : 'secondary') }} align-self-start mt-1">
+                {{ t.sentiment }}
+            </span>
+            <div>
+                <div class="fw-semibold">{{ t.titre }}</div>
+                <small class="text-muted">{{ t.contenu|slice(0, 80) }}…</small>
+            </div>
+        </div>
+        {% else %}
+            <p class="text-muted text-center py-2">Aucune discussion</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

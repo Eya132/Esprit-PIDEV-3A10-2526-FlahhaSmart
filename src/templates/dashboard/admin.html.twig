@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+{% block title %}Dashboard Admin — FlahaSmart{% endblock %}
+{% block page_title %}Dashboard Administrateur{% endblock %}
+
+{% block body %}
+
+{# ── Stat cards ────────────────────────────────────────────────────────── #}
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="--c1:#2e7d52;--c2:#3aad74;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="fs-1 fw-bold">{{ stats.users }}</div>
+                    <div class="opacity-75">Utilisateurs</div>
+                </div>
+                <span style="font-size:2rem;">👤</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="--c1:#1565a8;--c2:#2196f3;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="fs-1 fw-bold">{{ stats.articles }}</div>
+                    <div class="opacity-75">Articles</div>
+                </div>
+                <span style="font-size:2rem;">📦</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="--c1:#6a1fb5;--c2:#ab47bc;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="fs-1 fw-bold">{{ stats.commandes }}</div>
+                    <div class="opacity-75">Commandes</div>
+                </div>
+                <span style="font-size:2rem;">🛒</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="--c1:#bf6a00;--c2:#f9a825;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="fs-1 fw-bold">{{ stats.threads }}</div>
+                    <div class="opacity-75">Threads forum</div>
+                </div>
+                <span style="font-size:2rem;">💬</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ── Derniers utilisateurs ─────────────────────────────────────────────── #}
+<div class="card">
+    <div class="card-header bg-white border-0 pt-3 pb-0">
+        <h5 class="mb-0">Derniers utilisateurs inscrits</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for u in lastUsers %}
+                    <tr>
+                        <td class="text-muted">{{ u.id_user }}</td>
+                        <td><strong>{{ u.prenom }} {{ u.nom }}</strong></td>
+                        <td>{{ u.email }}</td>
+                        <td><span class="badge badge-{{ u.role }}">{{ u.role }}</span></td>
+                        <td>
+                            {% if u.actif %}
+                                <span class="badge bg-success-subtle text-success">Actif</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger">Inactif</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ u.date_creation|date('d/m/Y') }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="text-center text-muted py-3">Aucun utilisateur</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

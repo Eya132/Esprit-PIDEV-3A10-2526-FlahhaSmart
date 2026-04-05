@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - FlahaSmart{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h3>Connexion</h3>
+                </div>
+                <div class="card-body">
+                    {# AFFICHAGE DES ERREURS #}
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
+
+                    {# MESSAGE DE SUCCES #}
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    {# FORMULAIRE #}
+                    <form method="post" action="{{ path('app_login') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ last_username }}" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                    </form>
+
+                    <div class="mt-3 text-center">
+                        <a href="{{ path('app_register') }}">Créer un compte</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if error %}
+    <div class="alert alert-danger">
+        ERREUR : {{ error.message }}   {# ← change messageKey par message #}
+    </div>
+{% endif %}
+{% endblock %}

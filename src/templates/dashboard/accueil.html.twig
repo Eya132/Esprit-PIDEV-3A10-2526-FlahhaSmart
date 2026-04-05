@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - FlahaSmart{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card p-4">
+                <h1 class="mb-3">Bienvenue sur FlahaSmart</h1>
+                <p class="lead">Vous êtes connecté. Choisissez votre espace selon votre rôle :</p>
+
+                <div class="list-group">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('dashboard_admin') }}" class="list-group-item list-group-item-action">
+                            <strong>Administration</strong> — Accéder au dashboard admin
+                        </a>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_AGRICULTEUR') %}
+                        <a href="{{ path('dashboard_agriculteur') }}" class="list-group-item list-group-item-action">
+                            <strong>Agriculteur</strong> — Voir votre tableau de bord
+                        </a>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_CLIENT') %}
+                        <a href="{{ path('dashboard_client') }}" class="list-group-item list-group-item-action">
+                            <strong>Client</strong> — Voir votre espace client
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="mt-4">
+                    <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary">Se déconnecter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

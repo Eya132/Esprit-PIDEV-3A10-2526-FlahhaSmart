@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ title }} — FlahaSmart{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+
+        <div class="card p-4">
+
+            {% if user %}
+            {# Infos résumé en haut pour la modif #}
+            <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded">
+                <div style="font-size:2.5rem;">👤</div>
+                <div>
+                    <div class="fw-bold fs-5">{{ user.fullName }}</div>
+                    <div class="text-muted small">{{ user.email }}</div>
+                    <span class="badge badge-{{ user.role }}">{{ user.role }}</span>
+                    {% if user.actif %}
+                        <span class="badge bg-success ms-1">Actif</span>
+                    {% else %}
+                        <span class="badge bg-danger ms-1">Inactif</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {{ form_start(form) }}
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ form_label(form.nom) }}</label>
+                    {{ form_widget(form.nom) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ form_label(form.prenom) }}</label>
+                    {{ form_widget(form.prenom) }}
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label fw-semibold">{{ form_label(form.email) }}</label>
+                {{ form_widget(form.email) }}
+                {{ form_errors(form.email) }}
+            </div>
+
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ form_label(form.telephone) }}</label>
+                    {{ form_widget(form.telephone) }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ form_label(form.ville) }}</label>
+                    {{ form_widget(form.ville) }}
+                </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ form_label(form.role) }}</label>
+                    {{ form_widget(form.role) }}
+                </div>
+                <div class="col-md-6 d-flex align-items-end pb-1">
+                    <div class="form-check">
+                        {{ form_widget(form.actif) }}
+                        <label class="form-check-label fw-semibold" for="{{ form.actif.vars.id }}">
+                            Compte actif
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div>
+                <label class="form-label fw-semibold">{{ form_label(form.plainPassword) }}</label>
+                {{ form_widget(form.plainPassword) }}
+                {{ form_errors(form.plainPassword) }}
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-success px-4 fw-semibold">
+                    <i class="bi bi-check-circle"></i>
+                    {{ user ? 'Enregistrer' : 'Créer l\'utilisateur' }}
+                </button>
+                <a href="{{ path('admin_users') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

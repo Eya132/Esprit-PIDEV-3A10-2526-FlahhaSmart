@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+{% block title %}Gestion Utilisateurs — FlahaSmart{% endblock %}
+{% block page_title %}Gestion des Utilisateurs{% endblock %}
+
+{% block body %}
+
+{# ── Stats ── #}
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-2">
+        <div class="stat-card" style="--c1:#1a3c34;--c2:#2e7d52;">
+            <div class="fs-2 fw-bold">{{ stats.total }}</div>
+            <div class="opacity-75 small">Total</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="stat-card" style="--c1:#c05000;--c2:#e07020;">
+            <div class="fs-2 fw-bold">{{ stats.admins }}</div>
+            <div class="opacity-75 small">Admins</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="stat-card" style="--c1:#1a6e35;--c2:#3aad74;">
+            <div class="fs-2 fw-bold">{{ stats.agriculteurs }}</div>
+            <div class="opacity-75 small">Agriculteurs</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="stat-card" style="--c1:#1a4fa0;--c2:#2196f3;">
+            <div class="fs-2 fw-bold">{{ stats.clients }}</div>
+            <div class="opacity-75 small">Clients</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="stat-card" style="--c1:#2e7d52;--c2:#66bb6a;">
+            <div class="fs-2 fw-bold">{{ stats.actifs }}</div>
+            <div class="opacity-75 small">Actifs</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2 d-flex align-items-center justify-content-center">
+        <a href="{{ path('admin_user_new') }}" class="btn btn-success w-100 py-3 fw-semibold">
+            <i class="bi bi-person-plus"></i><br>Ajouter
+        </a>
+    </div>
+</div>
+
+{# ── Filtres ── #}
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small fw-semibold">Recherche</label>
+                <input type="text" name="search" value="{{ search }}"
+                       class="form-control" placeholder="Nom, prénom ou email...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Rôle</label>
+                <select name="role" class="form-select">
+                    <option value="">Tous les rôles</option>
+                    <option value="ADMINISTRATEUR" {{ role == 'ADMINISTRATEUR' ? 'selected' : '' }}>Administrateur</option>
+                    <option value="AGRICULTEUR"    {{ role == 'AGRICULTEUR'    ? 'selected' : '' }}>Agriculteur</option>
+                    <option value="CLIENT"         {{ role == 'CLIENT'         ? 'selected' : '' }}>Client</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Filtrer
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ path('admin_users') }}" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# ── Table ── #}
+<div class="card">
+    <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            Utilisateurs
+            <span class="badge bg-secondary ms-2">{{ users|length }}</span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Ville</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Inscription</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for u in users %}
+                    <tr>
+                        <td class="text-muted small">{{ u.id }}</td>
+                        <td>
+                            <div class="fw-semibold">{{ u.prenom }} {{ u.nom }}</div>
+                        </td>
+                        <td class="text-muted small">{{ u.email }}</td>
+                        <td class="text-muted small">{{ u.telephone ?? '—' }}</td>
+                        <td class="text-muted small">{{ u.ville ?? '—' }}</td>
+                        <td>
+                            <span class="badge badge-{{ u.role }}">{{ u.role }}</span>
+                        </td>
+                        <td>
+                            {% if u.actif %}
+                                <span class="badge bg-success-subtle text-success">Actif</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger">Inactif</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ u.dateCreation|date('d/m/Y') }}</td>
+                        <td class="text-center">
+                            <div class="d-flex gap-1 justify-content-center">
+
+                                {# Modifier #}
+                                <a href="{{ path('admin_user_edit', {id: u.id}) }}"
+                                   class="btn btn-sm btn-outline-primary" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                {# Activer / Désactiver #}
+                                <form method="post" action="{{ path('admin_user_toggle', {id: u.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ u.id) }}">
+                                    <button type="submit"
+                                            class="btn btn-sm {{ u.actif ? 'btn-outline-warning' : 'btn-outline-success' }}"
+                                            title="{{ u.actif ? 'Désactiver' : 'Activer' }}">
+                                        <i class="bi {{ u.actif ? 'bi-toggle-on' : 'bi-toggle-off' }}"></i>
+                                    </button>
+                                </form>
+
+                                {# Supprimer #}
+                                {% if u.email != app.user.userIdentifier %}
+                                <form method="post" action="{{ path('admin_user_delete', {id: u.id}) }}"
+                                      onsubmit="return confirm('Supprimer {{ u.prenom }} {{ u.nom }} ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ u.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="bi bi-people fs-2 d-block mb-2"></i>
+                            Aucun utilisateur trouvé
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
