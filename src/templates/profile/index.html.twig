@@ -1,3 +1,4 @@
+{# templates/profile/index.html.twig #}
 {% extends 'base.html.twig' %}
 {% block title %}Mon Profil — FlahaSmart{% endblock %}
 {% block page_title %}Mon Profil{% endblock %}
@@ -23,10 +24,6 @@
                 <div class="mb-2">
                     <small class="text-muted d-block">Ville</small>
                     <strong>{{ user.ville ?? '—' }}</strong>
-                </div>
-                <div class="mb-2">
-                    <small class="text-muted d-block">Adresse</small>
-                    <strong>{{ user.adresse ?? '—' }}</strong>
                 </div>
                 <div class="mb-2">
                     <small class="text-muted d-block">Membre depuis</small>
@@ -80,28 +77,25 @@
                 </div>
             </div>
 
-            <div class="mt-3">
-                <label class="form-label fw-semibold">{{ form_label(form.adresse) }}</label>
-                {{ form_widget(form.adresse) }}
-            </div>
+            {# PAS DE CHAMP ADRESSE ICI #}
 
             <hr class="my-4">
-
             <h6 class="fw-bold mb-3">🔒 Changer le mot de passe</h6>
-            <div>
-                <label class="form-label fw-semibold">{{ form_label(form.newPassword) }}</label>
-                {{ form_widget(form.newPassword) }}
-                {{ form_errors(form.newPassword) }}
-                <small class="text-muted">Laisser vide pour conserver le mot de passe actuel</small>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">{{ form_label(form.newPassword.first) }}</label>
+                {{ form_widget(form.newPassword.first) }}
             </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">{{ form_label(form.newPassword.second) }}</label>
+                {{ form_widget(form.newPassword.second) }}
+                {{ form_errors(form.newPassword) }}
+            </div>
+            <small class="text-muted">Laisser vide pour conserver le mot de passe actuel</small>
 
             <div class="mt-4">
                 <button type="submit" class="btn btn-success px-4 py-2 fw-semibold">
                     <i class="bi bi-check-circle"></i> Enregistrer les modifications
                 </button>
-                <a href="javascript:history.back()" class="btn btn-outline-secondary ms-2">
-                    Annuler
-                </a>
             </div>
 
             {{ form_end(form) }}

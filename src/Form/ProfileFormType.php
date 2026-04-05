@@ -1,4 +1,5 @@
 <?php
+// src/Form/ProfileFormType.php
 
 namespace App\Form;
 
@@ -42,11 +43,6 @@ class ProfileFormType extends AbstractType
                 'required' => false,
                 'attr'     => ['class' => 'form-control'],
             ])
-            ->add('adresse', TextType::class, [
-                'label'    => 'Adresse',
-                'required' => false,
-                'attr'     => ['class' => 'form-control'],
-            ])
             ->add('newPassword', RepeatedType::class, [
                 'type'           => PasswordType::class,
                 'mapped'         => false,
@@ -60,9 +56,6 @@ class ProfileFormType extends AbstractType
                     'attr'  => ['class' => 'form-control', 'placeholder' => 'Repetez le mot de passe'],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
-                'constraints' => [
-                    new Assert\Length(['min' => 6, 'minMessage' => 'Minimum 6 caracteres']),
-                ],
             ]);
     }
 
